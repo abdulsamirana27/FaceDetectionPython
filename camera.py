@@ -34,7 +34,7 @@ class VideoCamera(object):
             # detectar si hay un rostro frontal o de perfil
             boxes,names = detector.face_orientation(gray)
             if(len(names)>0):
-                return self.detectFace(names[0],frame,boxes)
+                return self.detectFace(face_rotation,frame,boxes,names)
             ret, jpeg = cv2.imencode('.jpg', frame)
             return jpeg.tobytes()
             # print(detector.face_orientation(gray))
@@ -62,20 +62,22 @@ class VideoCamera(object):
             #             self.leftCounter = 0
             #             print("left scenario pass")
                  
-    def detectFace(self,face_rotation,frame,boxes):
-        if (face_rotation == 'left'):
-            frame = BoundingBox.bounding_box(frame,boxes,face_rotation)
+    def detectFace(self,face_rotation,frame,boxes,names):
+        print(face_rotation)
+        if (face_rotation == names[0]):
+            frame = BoundingBox.bounding_box(frame,boxes,names)
             # print(frame)
             # ----------------------------------------------------------------------------
             end_time = time.time() - self.star_time    
             FPS = 1/end_time
             cv2.putText(frame,f"FPS: {round(FPS,3)}",(10,50),cv2.FONT_HERSHEY_COMPLEX,1,(0,0,255),2)
-            # cv2.imshow('preview',frame)
-            # if cv2.waitKey(1) &0xFF == ord('q'):
-            #     break
-            # encode OpenCV raw frame to jpg and displaying it
-            # ret, jpeg = cv2.imencode('.jpg', frame)
-            # return jpeg.tobytes()
+        elif (face_rotation == names[0]):
+            frame = BoundingBox.bounding_box(frame,boxes,names)
+            # print(frame)
+            # ----------------------------------------------------------------------------
+            end_time = time.time() - self.star_time    
+            FPS = 1/end_time
+            cv2.putText(frame,f"FPS: {round(FPS,3)}",(10,50),cv2.FONT_HERSHEY_COMPLEX,1,(0,0,255),2)
         else:
             pass
         ret, jpeg = cv2.imencode('.jpg', frame)

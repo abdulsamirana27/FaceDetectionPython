@@ -18,7 +18,7 @@
    <!-- author = {{author}} -->
     <div class="col-6">
         <H1 class="">Face Liveliness</H1>
-    <form action="/face_detection",method="post">
+    <form action="/" method="post">
         <div class="row align-items-center">
             <div class="col-lg-12 mt-5">
                 <input type="submit" value="Face swipe left" name="faceleft"/>
@@ -39,10 +39,7 @@
     
 <div class="col-6">
             <H1 class="text-center">Live Streaming</H1>
-            {% if author %}
-            <img class="mt-5" src="{{ url_for('video_feed') }}" width="100%">
-            {% endif %}
-        
+            <img class="mt-5" src="{{ url_for('video_feed',face_rotation=face_rotation) }}" width="100%">  
         </div>
             
 </div>
