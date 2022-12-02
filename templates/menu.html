@@ -18,23 +18,25 @@
    <!-- author = {{author}} -->
     <div class="col-6">
         <H1 class="">Face Liveliness</H1>
-    <div class="row align-items-center">
-        <div class="col-lg-12 mt-5">
-            <button type="button" onclick="">Face swipe left</button>
-        </div>
-        <div class="col-lg-12 mt-5">
-            <button type="button">Face swipe right</button>
-
-        </div>
-        <div class="col-lg-12 mt-5">
-        <button type="button">Face Smiley</button>
-
-        </div>
+    <form action="/face_detection",method="post">
+        <div class="row align-items-center">
             <div class="col-lg-12 mt-5">
-                <button type="button">Face blink</button>
+                <input type="submit" value="Face swipe left" name="faceleft"/>
+                <!-- <button type="button">Face swipe left</button> -->
+            </div>
+            <div class="col-lg-12 mt-5">
+                <input type="submit" value="Face swipe right" name="faceright"/>
+            </div>
+            <div class="col-lg-12 mt-5">
+                <input type="submit" value="Face Smiley" name="facesmiley"/>
+            </div>
+                <div class="col-lg-12 mt-5">
+                    <input type="submit" value="Face blink" name="faceblink"/>
+                </div>
             </div>
         </div>
-    </div>
+    </form>
+    
 <div class="col-6">
             <H1 class="text-center">Live Streaming</H1>
             {% if author %}
