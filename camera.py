@@ -7,7 +7,7 @@ import f_detector
 # defining face detector
 
 # instanciar detector
-detector = f_detector.detect_face_orientation()
+detector = f_detector.detect_face_orientation() 
 
 class VideoCamera(object):
     x = '1'
