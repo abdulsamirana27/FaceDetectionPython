@@ -5,8 +5,10 @@ from camera import VideoCamera
 app = Flask(__name__)
 @app.route('/')
 def index():
+    author = True
     # rendering webpage
-    return render_template('index.html')
+    return render_template('menu.html',author=author)
+     
 def gen(camera):
     while True:
         #get camera frame
