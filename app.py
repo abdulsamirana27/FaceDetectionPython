@@ -1,5 +1,3 @@
-# main.py
-# import the necessary packages
 from flask import Flask, render_template, Response,request,redirect
 from camera import VideoCamera
 face_rotation = ""
@@ -18,6 +16,8 @@ def faceDetection():
         face_rotation="left"
     elif  request.form.get('faceright')!=None:
         face_rotation="right"
+    elif  request.form.get('faceblink')!=None:
+        face_rotation="blink"
     else:
         face_rotation="frontal"
     return render_template("menu.html",face_rotation=face_rotation)
