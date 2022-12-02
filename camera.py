@@ -3,13 +3,14 @@ import time
 import imutils
 import BoundingBox
 import f_detector
-from enums import face_rotation_enum
 import numpy as np
+import config as cfg
 # defining face detector
 
 # instanciar detector
 detector = f_detector.detect_face_orientation() 
 eye_detector = f_detector.eye_blink_detector()
+emotion_detector = f_detector.predict_emotions()
 class VideoCamera(object):
     x = '1'
     resetCounter = 0
@@ -42,8 +43,11 @@ class VideoCamera(object):
             elif(face_rotation=="blink"):
                  #eye blink
                 return self.blink_detection(frame,gray)
-            ret, jpeg = cv2.imencode('.jpg', frame)
-            return jpeg.tobytes()
+            elif(face_rotation=="smile"):
+                return self.emotion_detection(frame)
+            else:
+                ret, jpeg = cv2.imencode('.jpg', frame)
+                return jpeg.tobytes()
             # print(detector.face_orientation(gray))
 
             # if(names[0]=='frontal'):
@@ -108,5 +112,17 @@ class VideoCamera(object):
         end_time = time.time() - self.star_time    
         FPS = 1/end_time
         cv2.putText(img_post,f"FPS: {round(FPS,3)}",(10,50),cv2.FONT_HERSHEY_COMPLEX,1,(0,0,255),2)
+        ret, jpeg = cv2.imencode('.jpg', img_post)
+        return jpeg.tobytes()
+    def emotion_detection(self,im):
+        emotions,boxes_face = emotion_detector.get_emotion(im)
+        if len(emotions)!=0 and emotions[0]=="happy":
+            img_post = f_detector.bounding_box(im,boxes_face,emotions)
+        else:
+            img_post = im 
+
+        end_time = time.time() - self.star_time    
+        FPS = 1/end_time
+        cv2.putText(im,f"FPS: {round(FPS,3)}",(10,50),cv2.FONT_HERSHEY_COMPLEX,1,(0,0,255),2)
         ret, jpeg = cv2.imencode('.jpg', img_post)
         return jpeg.tobytes()

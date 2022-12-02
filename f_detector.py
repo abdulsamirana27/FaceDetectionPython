@@ -4,6 +4,9 @@ import cv2
 import numpy as np
 from imutils import face_utils
 from scipy.spatial import distance as dist
+from keras.models import load_model
+# from keras.preprocessing.image import img_to_array
+import dlib
 
 
 def detect(img, cascade):
@@ -151,3 +154,39 @@ def bounding_box(img,box,match_name=[]):
         else:
             cv2.putText(img, match_name[i], (x0, y0-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0,255,0), 2)
     return img
+class predict_emotions():
+    def __init__(self):
+        # cargo modelo de deteccion de emociones
+        self.model = load_model(cfg.path_model)
+        # cargo modelo de deteccion de rostros frontales
+        self.detect_frontal_face = dlib.get_frontal_face_detector()
+
+    def preprocess_img(self,face_image,rgb=True,w=48,h=48):
+        face_image = cv2.resize(face_image, (w,h))
+        if rgb == False:
+            face_image = cv2.cvtColor(face_image, cv2.COLOR_BGR2GRAY)
+        face_image = face_image.astype("float") / 255.0
+        face_image= np.asarray(face_image)
+        face_image = np.expand_dims(face_image, axis=0)
+        return face_image
+
+    def get_emotion(self,img):
+        emotions = []
+        # detectar_rostro
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        rectangles = self.detect_frontal_face(gray, 0)
+        boxes_face = convert_rectangles2array(rectangles,img)
+        if len(boxes_face)!=0:
+            for box in boxes_face:
+                y0,x0,y1,x1 = box
+                face_image = img[x0:x1,y0:y1]
+                # preprocesar data
+                face_image = self.preprocess_img(face_image ,cfg.rgb, cfg.w, cfg.h)
+                # predecir imagen
+                prediction = self.model.predict(face_image)
+                emotion = cfg.labels[prediction.argmax()]
+                emotions.append(emotion)
+        else:
+            emotions = []
+            boxes_face = []
+        return emotions,boxes_face

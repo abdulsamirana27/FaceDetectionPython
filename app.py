@@ -16,8 +16,10 @@ def faceDetection():
         face_rotation="left"
     elif  request.form.get('faceright')!=None:
         face_rotation="right"
-    elif  request.form.get('faceblink')!=None:
+    elif request.form.get('faceblink')!=None:
         face_rotation="blink"
+    elif request.form.get('facesmiley')!=None:
+        face_rotation="smile"
     else:
         face_rotation="frontal"
     return render_template("menu.html",face_rotation=face_rotation)
