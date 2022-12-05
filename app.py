@@ -1,6 +1,6 @@
 from flask import Flask, render_template, Response,request,redirect
 from camera import VideoCamera
-face_rotation = ""
+from enums.face_rotation_enum import FaceRotationEnum
 app = Flask(__name__)
 @app.route('/',methods= ['POST','GET',])
 def index():
@@ -12,16 +12,17 @@ def gen(camera,face_rotation):
         frame = camera.get_frame(face_rotation)
         yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 def faceDetection():
+    face_rotation = ""
     if request.form.get('faceleft')!=None:
-        face_rotation="left"
+        face_rotation=FaceRotationEnum.FACELEFT.value
     elif  request.form.get('faceright')!=None:
-        face_rotation="right"
-    elif request.form.get('faceblink')!=None:
-        face_rotation="blink"
+        face_rotation=FaceRotationEnum.FACERIGHT.value
+    elif request.form.get('eyeblink')!=None:
+        face_rotation=FaceRotationEnum.EYEBLINK.value
     elif request.form.get('facesmiley')!=None:
-        face_rotation="smile"
+        face_rotation=FaceRotationEnum.FACESMILEY.value
     else:
-        face_rotation="frontal"
+        face_rotation=FaceRotationEnum.FACEFRONT.value
     return render_template("menu.html",face_rotation=face_rotation)
 
 @app.route('/video_feed')

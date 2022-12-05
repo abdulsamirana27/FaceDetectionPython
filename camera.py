@@ -1,17 +1,13 @@
 import cv2
 import time
 import imutils
-import BoundingBox
 import f_detector
 import numpy as np
-import config as cfg
-# defining face detector
-
-# instanciar detector
-detector = f_detector.detect_face_orientation() 
-eye_detector = f_detector.eye_blink_detector()
-emotion_detector = f_detector.predict_emotions()
+from enums.face_rotation_enum import FaceRotationEnum
 class VideoCamera(object):
+    detector = f_detector.detect_face_orientation() 
+    eye_detector = f_detector.eye_blink_detector()
+    emotion_detector = f_detector.predict_emotions()
     x = '1'
     resetCounter = 0
     rightCounter = 0
@@ -28,24 +24,25 @@ class VideoCamera(object):
         #releasing camera
         self.video.release()
     def get_frame(self,face_rotation):
-            #extracting framesx = '1'
-            self.star_time = time.time()
-            ret, frame = self.video.read()
-            # frame = cv2.flip(frame, 1)
-            frame = cv2.flip(frame, 1)
-            frame = imutils.resize(frame,width=720)
-            #-------------------------- Insertar preproceso -------------------------------------
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            # face left,right,forntal
-            boxes,names = detector.face_orientation(gray)
-            if(len(names)>0 and (face_rotation=="left" or face_rotation=="right" or face_rotation=="frontal")):
-                return self.detectFace(face_rotation,frame,boxes,names)
-            elif(face_rotation=="blink"):
-                 #eye blink
-                return self.blink_detection(frame,gray)
-            elif(face_rotation=="smile"):
-                return self.emotion_detection(frame)
-            else:
+            try:
+                self.star_time = time.time()
+                ret, frame = self.video.read()
+                # frame = cv2.flip(frame, 1)
+                frame = cv2.flip(frame, 1)
+                frame = imutils.resize(frame,width=720)
+                gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                # face left,right,forntal
+                if((face_rotation==FaceRotationEnum.FACELEFT.value or face_rotation==FaceRotationEnum.FACERIGHT.value or face_rotation==FaceRotationEnum.FACEFRONT.value)):
+                    return self.faceOrientation(frame,gray,face_rotation)
+                elif(face_rotation==FaceRotationEnum.EYEBLINK.value):
+                    #eye blink
+                    return self.blink_detection(frame,gray)
+                elif(face_rotation==FaceRotationEnum.FACESMILEY.value):
+                    return self.emotion_detection(frame)
+                else:
+                    ret, jpeg = cv2.imencode('.jpg', frame)
+                    return jpeg.tobytes()
+            except Exception as ex:
                 ret, jpeg = cv2.imencode('.jpg', frame)
                 return jpeg.tobytes()
             # print(detector.face_orientation(gray))
@@ -73,28 +70,22 @@ class VideoCamera(object):
             #             self.leftCounter = 0
             #             print("left scenario pass")
                  
-    def detectFace(self,face_rotation,frame,boxes,names):
-        print(face_rotation)
-        if (face_rotation == names[0]):
-            frame = BoundingBox.bounding_box(frame,boxes,names)
-            # print(frame)
-            # ----------------------------------------------------------------------------
-            end_time = time.time() - self.star_time    
-            FPS = 1/end_time
-            cv2.putText(frame,f"FPS: {round(FPS,3)}",(10,50),cv2.FONT_HERSHEY_COMPLEX,1,(0,0,255),2)
-        elif (face_rotation == names[0]):
-            frame = BoundingBox.bounding_box(frame,boxes,names)
-            # print(frame)
-            # ----------------------------------------------------------------------------
-            end_time = time.time() - self.star_time    
-            FPS = 1/end_time
-            cv2.putText(frame,f"FPS: {round(FPS,3)}",(10,50),cv2.FONT_HERSHEY_COMPLEX,1,(0,0,255),2)
-        else:
-            pass
+    def faceOrientation(self,frame,gray,face_rotation):
+        boxes,names = self.detector.face_orientation(gray)
+        if(len(names)>0):
+            if (face_rotation == names[0]):
+                frame = f_detector.bounding_box(frame,boxes,names)
+                # print(frame)
+                # ----------------------------------------------------------------------------
+                end_time = time.time() - self.star_time    
+                FPS = 1/end_time
+                cv2.putText(frame,f"FPS: {round(FPS,3)}",(10,50),cv2.FONT_HERSHEY_COMPLEX,1,(0,0,255),2)
+            else:
+                pass
         ret, jpeg = cv2.imencode('.jpg', frame)
         return jpeg.tobytes()
     def blink_detection(self,frame,gray):
-        rectangles = eye_detector.detector_faces(gray, 0)
+        rectangles = self.eye_detector.detector_faces(gray, 0)
         boxes_face = f_detector.convert_rectangles2array(rectangles,frame)
         if len(boxes_face)!=0:
             # seleccionar el rostro con mas area
@@ -103,7 +94,7 @@ class VideoCamera(object):
             rectangles = rectangles[index]
             boxes_face = np.expand_dims(boxes_face[index],axis=0)
             # blinks_detector
-            self.COUNTER,self.TOTAL = eye_detector.eye_blink(gray,rectangles,self.COUNTER,self.TOTAL )
+            self.COUNTER,self.TOTAL = self.eye_detector.eye_blink(gray,rectangles,self.COUNTER,self.TOTAL )
             # agregar bounding box
             img_post = f_detector.bounding_box(frame,boxes_face,['blinks: {}'.format(self.TOTAL)])
         else:
@@ -115,8 +106,8 @@ class VideoCamera(object):
         ret, jpeg = cv2.imencode('.jpg', img_post)
         return jpeg.tobytes()
     def emotion_detection(self,im):
-        emotions,boxes_face = emotion_detector.get_emotion(im)
-        if len(emotions)!=0 and emotions[0]=="happy":
+        emotions,boxes_face = self.emotion_detector.get_emotion(im)
+        if len(emotions)>0 and emotions[0]==FaceRotationEnum.FACESMILEY.value:
             img_post = f_detector.bounding_box(im,boxes_face,emotions)
         else:
             img_post = im 

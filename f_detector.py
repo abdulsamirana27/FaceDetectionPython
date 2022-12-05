@@ -5,8 +5,6 @@ import numpy as np
 from imutils import face_utils
 from scipy.spatial import distance as dist
 from keras.models import load_model
-# from keras.preprocessing.image import img_to_array
-import dlib
 
 
 def detect(img, cascade):
@@ -30,6 +28,8 @@ def convert_rightbox(img,box_right):
             res = np.expand_dims(box,axis=0)
         else:
             res = np.vstack((res,box))
+    if(len(res)>0):
+        res = [res[0]]
     return res
 
 
@@ -132,6 +132,8 @@ def convert_rectangles2array(rectangles,image):
             res = np.expand_dims(new_box,axis=0)
         else:
             res = np.vstack((res,new_box))
+    if(len(res)>0):
+        res = [res[0]]
     return res
 
 def get_areas(boxes):
