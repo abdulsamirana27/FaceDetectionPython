@@ -22,7 +22,7 @@ def faceDetection():
     elif request.form.get('facesmiley')!=None:
         face_rotation=FaceRotationEnum.FACESMILEY.value
     else:
-        face_rotation=FaceRotationEnum.FACEFRONT.value
+        face_rotation=FaceRotationEnum.FACENONE.value
     return render_template("menu.html",face_rotation=face_rotation)
 
 @app.route('/video_feed')
