@@ -5,3 +5,4 @@ class FaceRotationEnum(enum.Enum):
    FACEFRONT = "frontal"
    FACESMILEY = "happy"
    EYEBLINK = "blink"
+   FACENONE = "none"
