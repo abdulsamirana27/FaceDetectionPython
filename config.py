@@ -13,6 +13,8 @@ TOTAL = 0
 detect_frontal_face = 'haarcascades/haarcascade_frontalface_alt.xml'
 # model path
 path_model = './emotion_model/model_dropout.hdf5'
+path_model2 = './emotion_model/antispoofing_model.h5'
+json_path = './emotion_model/antispoofing_model.json'
 w,h = 48,48
 rgb = False
 labels = ['angry','disgust','fear','happy','neutral','sad','surprise']

@@ -43,6 +43,7 @@ class VideoCamera(object):
                     ret, jpeg = cv2.imencode('.jpg', frame)
                     return jpeg.tobytes()
             except Exception as ex:
+                print(ex)
                 ret, jpeg = cv2.imencode('.jpg', frame)
                 return jpeg.tobytes()
             # print(detector.face_orientation(gray))

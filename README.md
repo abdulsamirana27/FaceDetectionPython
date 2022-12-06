@@ -1,4 +1,4 @@
-#python version 3.7.8
+#python version 3.10.7
 # run file
 python app.py
 #before start install pip install -r requirement.txt

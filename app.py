@@ -2,7 +2,7 @@ from flask import Flask, render_template, Response,request,redirect
 from camera import VideoCamera
 from enums.face_rotation_enum import FaceRotationEnum
 app = Flask(__name__)
-@app.route('/',methods= ['POST','GET',])
+@app.route('/',methods= ['POST','GET'])
 def index():
     return faceDetection()
      
