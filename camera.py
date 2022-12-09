@@ -75,7 +75,7 @@ class VideoCamera(object):
         boxes,names = self.detector.face_orientation(gray)
         if(len(names)>0):
             if (face_rotation == names[0]):
-                frame = f_detector.bounding_box(frame,boxes,names)
+                frame = f_detector.bounding_box(frame,[boxes[0]],[names[0]])
                 # print(frame)
                 # ----------------------------------------------------------------------------
                 end_time = time.time() - self.star_time    
